@@ -40,7 +40,7 @@ namespace Stock_taking_Tools.Controllers
             {
                 NotFoundResult notFoundResult = NotFound();
 
-                return notFoundResult; 
+                return notFoundResult;
             }
 
             return brand;
@@ -58,7 +58,7 @@ namespace Stock_taking_Tools.Controllers
         [HttpPut]
         public async Task<IActionResult> PutBrand(int id, Brand brand)
         {
-            if(id != brand.Id)
+            if (id != brand.Id)
             {
                 return BadRequest();
             }
@@ -68,12 +68,44 @@ namespace Stock_taking_Tools.Controllers
             {
                 await _dbContext.SaveChangesAsync();
             }
-            catch(DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException)
             {
-                if 
+                if (!BrandAvailable(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
-
+            return Ok();
         }
+
+        private bool BrandAvailable(int id)
+        {
+            return (_dbContext.Brands?.Any(X => X.Id == id)).GetValueOrDefault();
+        }
+
+
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBrand(int id)
+        {
+            if (_dbContext.Brands == null)
+            {
+                return NotFound();
+            }
+            var brand = await _dbContext.Brands.FindAsync(id);
+            if (brand == null)
+            {
+                return NotFound();
+            }
+            _dbContext.Brands.Remove(brand);
+            await _dbContext.SaveChangesAsync();
+            return Ok();
+        }
+
 
     }
 }

@@ -8,10 +8,5 @@ namespace Stock_taking_Tools.Models
         public string? Name { get; set; }
         public string? Category { get; set; }
         public int Isactive { get; set; }
-
-
-
-
-
     }
 }
