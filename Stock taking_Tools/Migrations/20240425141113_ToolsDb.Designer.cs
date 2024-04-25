@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Stock_taking_Tools.Models;
 
@@ -9,10 +10,12 @@ using Stock_taking_Tools.Models;
 
 namespace Stock_taking_Tools.Migrations
 {
-    [DbContext(typeof(BrandContext))]
-    partial class BrandContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20240425141113_ToolsDb")]
+    partial class ToolsDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,7 +24,7 @@ namespace Stock_taking_Tools.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Stock_taking_Tools.Models.Brand", b =>
+            modelBuilder.Entity("Stock_taking_Tools.Models.Tool", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -29,18 +32,19 @@ namespace Stock_taking_Tools.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Category")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("Isactive")
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("ToolName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands");
+                    b.ToTable("Tools");
                 });
 #pragma warning restore 612, 618
         }
