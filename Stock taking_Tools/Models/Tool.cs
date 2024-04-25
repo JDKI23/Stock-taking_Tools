@@ -8,7 +8,7 @@ namespace Stock_taking_Tools.Models
         public int Id { get; set; }
 
         [Required]
-        public string ToolName { get; set; }
+        public string? ToolName { get; set; }
         public int Quantity { get; set; }
         public bool IsAvailable { get; set; }
     }

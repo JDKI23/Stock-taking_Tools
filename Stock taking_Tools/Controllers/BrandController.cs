@@ -4,107 +4,82 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Stock_taking_Tools.Models;
 
-namespace Stock_taking_Tools.Controllers
+namespace ToolInventory.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BrandController : ControllerBase
+    public class ToolsController : ControllerBase
     {
-        private readonly BrandContext _dbContext;
+        private readonly ApplicationDbContext _context;
 
-        public BrandController(BrandContext dbContext)
+        public ToolsController(ApplicationDbContext context)
         {
-            _dbContext = dbContext;
+            _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Brand>>> GetBrands()
+        public async Task<ActionResult<IEnumerable<Tool>>> GetTool()
         {
-            if (_dbContext.Brands == null)
-            {
-                return NotFound();
-            }
-            return await _dbContext.Brands.ToListAsync();
+            return await _context.Tools.ToListAsync();
         }
+
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Brand>> GetBrand(int id)
+        public async Task<ActionResult<Tool>> GetTool(int id)
         {
-            if (_dbContext.Brands == null)
+            var Tool = await _context.Tools.FindAsync(id);
+
+            if (Tool == null)
             {
                 return NotFound();
             }
-            var brand = await _dbContext.Brands.FindAsync(id);
-            if (brand == null)
-            {
-                NotFoundResult notFoundResult = NotFound();
-
-                return notFoundResult;
-            }
-
-            return brand;
+            
+            return Tool;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Brand>> PostBrand(Brand brand)
+        public async Task<ActionResult<Tool>> AddTool(Tool Tool)
         {
-            _dbContext.Brands.Add(brand);
-            await _dbContext.SaveChangesAsync();
+            _context.Tools.Add(Tool);
+            await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetBrand), new { id = brand.Id }, brand);
+            return CreatedAtAction(nameof(GetTool), new { id = Tool.Id }, Tool);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> PutBrand(int id, Brand brand)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateTool(int id, Tool Tool)
         {
-            if (id != brand.Id)
+            if (id != Tool.Id)
             {
                 return BadRequest();
             }
-            _dbContext.Entry(id).State = EntityState.Modified;
+            _context.Entry(Tool).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                await _dbContext.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BrandAvailable(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return Ok();
+
+            return NoContent();
+
         }
-
-        private bool BrandAvailable(int id)
-        {
-            return (_dbContext.Brands?.Any(X => X.Id == id)).GetValueOrDefault();
-        }
-
-
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBrand(int id)
+        public async Task<IActionResult> DeleteTool(int id)
         {
-            if (_dbContext.Brands == null)
+            var Tool = await _context.Tools.FindAsync(id);
+
+            if (Tool == null)
+
             {
                 return NotFound();
             }
-            var brand = await _dbContext.Brands.FindAsync(id);
-            if (brand == null)
-            {
-                return NotFound();
-            }
-            _dbContext.Brands.Remove(brand);
-            await _dbContext.SaveChangesAsync();
-            return Ok();
+
+            _context.Tools.Remove(Tool);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
+
+
 
 
     }
